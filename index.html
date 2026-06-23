@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Нитка — соцсеть</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +11,7 @@
     <header>
       <h1>⚡ Нитка</h1>
       <div id="authArea"></div>
-      <span id="themeToggle" onclick="toggleTheme()" style="cursor:pointer; font-size:1.4rem;">🌓</span>
+      <span id="themeToggle" onclick="toggleTheme()" style="cursor:pointer;font-size:1.4rem;">🌓</span>
       <div id="notifArea">
         <span id="notifBell" onclick="toggleNotifPanel()">🔔<span id="notifCount" class="badge" style="display:none;">0</span></span>
         <div id="notifPanel" class="dropdown"></div>
@@ -35,6 +35,12 @@
       <input type="text" id="authName" placeholder="Ваше имя">
       <input type="password" id="authPass" placeholder="Пароль">
       <button onclick="authenticate()" class="primary">Войти / Создать</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>      <button onclick="authenticate()" class="primary">Войти / Создать</button>
     </div>
   </div>
 

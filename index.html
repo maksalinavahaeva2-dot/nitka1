@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Нитка — соцсеть по интересам</title>
+  <title>Нитка — соцсеть</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark">
@@ -20,31 +20,32 @@
     <main id="content"></main>
     <nav id="bottomNav">
       <button class="nav-btn" data-tab="feed">🔥<span>Лента</span></button>
-      <button class="nav-btn" data-tab="explore">🌍<span>Обзор</span></button>
+      <button class="nav-btn" data-tab="profile">👤<span>Мой профиль</span></button>
       <button class="nav-btn" data-tab="create">➕<span>Пост</span></button>
       <button class="nav-btn" data-tab="messages">💬<span>Чаты</span></button>
       <button class="nav-btn" data-tab="clubs">🧶<span>Клубки</span></button>
     </nav>
   </div>
 
-  <div id="profileModal" class="modal" style="display:none;">
+  <div id="loginModal" class="modal" style="display:none;">
     <div class="modal-content">
-      <span class="close" onclick="closeProfileModal()">&times;</span>
-      <h2>Войти или создать профиль</h2>
-      <div id="profileList"></div>
+      <span class="close" onclick="closeLoginModal()">&times;</span>
+      <h2>Вход</h2>
+      <input type="text" id="loginName" placeholder="Имя">
+      <input type="password" id="loginPass" placeholder="Пароль">
+      <button onclick="login()" class="primary">Войти</button>
       <hr>
-      <input type="text" id="newName" placeholder="Ваше имя">
-      <label>Аватар (необязательно)</label>
-      <input type="file" id="avatarInput" accept="image/*">
-      <button onclick="createProfile()" class="primary">Создать</button>
+      <p>Нет аккаунта? <a onclick="showRegister()" style="color:#00ffff; cursor:pointer;">Создать</a></p>
     </div>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>      <label>Аватар (необязательно)</label>
-      <input type="file" id="avatarInput" accept="image/*">
-      <button onclick="createProfile()" class="primary">Создать</button>
+  <div id="registerModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeRegisterModal()">&times;</span>
+      <h2>Регистрация</h2>
+      <input type="text" id="regName" placeholder="Имя">
+      <input type="password" id="regPass" placeholder="Пароль">
+      <button onclick="register()" class="primary">Создать профиль</button>
     </div>
   </div>
 

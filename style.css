@@ -14,7 +14,7 @@ main{padding:20px;max-width:800px;margin:0 auto}
 .card{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:18px;box-shadow:0 8px 20px rgba(0,0,0,0.4);animation:fadeInUp .4s ease}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .post-card img,.post-card video{max-width:100%;border-radius:12px;margin-top:12px}
-.avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#0f3460;display:flex;align-items:center;justify-content:center;font-size:24px}
+.avatar{width:44px;height:44px;border-radius:50%;background:#0f3460;display:flex;align-items:center;justify-content:center;font-size:24px}
 .avatar.donut{background:#ffcc00;color:#000}
 .likes-btn{background:none;border:none;font-size:1.3rem;cursor:pointer}
 .likes-btn:active{animation:heartPop .3s ease}
@@ -29,12 +29,14 @@ button.primary{background:linear-gradient(45deg,#ff00ff,#00ffff);border:none;pad
 .creator{background:gold;color:#000}.guest{background:#555}.premium{background:#ff00ff;color:white}.admin{background:#00ffff;color:#000}
 .stats{display:flex;gap:25px;margin:15px 0;font-size:0.95rem}
 .stats span{font-weight:bold;color:#00ffff}
-.achievement{display:inline-block;background:#0f3460;padding:4px 10px;border-radius:10px;margin:3px;font-size:0.8rem}
-.pin-badge{background:gold;color:black;padding:3px 8px;border-radius:10px;font-size:0.7rem;margin-left:6px}
 .carousel{position:relative;display:flex;align-items:center;justify-content:center}
 .carousel img{max-width:100%;border-radius:12px;display:none}
 .carousel img.active{display:block}
 .carousel button{position:absolute;background:rgba(0,0,0,0.5);color:white;border:none;font-size:1.8rem;padding:4px 10px;cursor:pointer;border-radius:50%;top:50%;transform:translateY(-50%)}
+.carousel .prev{left:5px}.carousel .next{right:5px}
+.search-bar input{margin-bottom:10px}
+.badge{position:absolute;top:-5px;right:-10px;background:red;color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem}
+.dropdown{display:none;position:absolute;top:40px;right:0;background:#16213e;border:1px solid #0f3460;border-radius:12px;width:280px;max-height:300px;overflow-y:auto;padding:10px;z-index:20}.carousel button{position:absolute;background:rgba(0,0,0,0.5);color:white;border:none;font-size:1.8rem;padding:4px 10px;cursor:pointer;border-radius:50%;top:50%;transform:translateY(-50%)}
 .carousel .prev{left:5px}.carousel .next{right:5px}
 .search-bar input{margin-bottom:10px}
 .badge{position:absolute;top:-5px;right:-10px;background:red;color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem}

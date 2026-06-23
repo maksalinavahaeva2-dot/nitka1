@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Нитка — соцсеть</title>
+  <title>Нитка — соцсеть по интересам</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark">
@@ -35,6 +35,14 @@
       <hr>
       <input type="text" id="newName" placeholder="Ваше имя">
       <label>Аватар (необязательно)</label>
+      <input type="file" id="avatarInput" accept="image/*">
+      <button onclick="createProfile()" class="primary">Создать</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>      <label>Аватар (необязательно)</label>
       <input type="file" id="avatarInput" accept="image/*">
       <button onclick="createProfile()" class="primary">Создать</button>
     </div>

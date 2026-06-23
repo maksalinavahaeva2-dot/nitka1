@@ -190,6 +190,614 @@
       margin: 6px;
       cursor: pointer;
     }
+    button.danger {
+      background: linear-gradient(45deg, #ff0000, #ff4444);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .role-tag {
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-left: 6px;
+      font-weight: bold;
+    }
+    .creator { background: gold; color: #000; }
+    .guest { background: #555; }
+    .premium { background: #ff00ff; color: white; }
+    .stats {
+      display: flex;
+      gap: 25px;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+    .stats span {
+      font-weight: bold;
+      color: #00ffff;
+    }
+    .carousel {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel img {
+      max-width: 100%;
+      border-radius: 12px;
+      display: none;
+    }
+    .carousel img.active {
+      display: block;
+    }
+    .carousel button {
+      position: absolute;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      font-size: 1.8rem;
+      padding: 4px 10px;
+      cursor: pointer;
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .carousel .prev { left: 5px; }
+    .carousel .next { right: 5px; }
+    .search-bar input {
+      margin-bottom: 10px;
+    }
+    .comment-item {
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 10px;
+      margin: 5px 0;
+      position: relative;
+    }
+    .message-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .message-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .pinned {
+      border: 2px solid gold;
+      background: rgba(255,215,0,0.1);
+    }
+    .post-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="dark">
+  <div id="app">
+    <header>
+      <h1>⚡ Нитка</h1>
+      <div id="authArea"></div>
+    </header>
+    <main id="content"></main>
+    <nav id="bottomNav">
+      <button class="nav-btn active" data-tab="feed">🔥<span>Лента</span></button>
+      <button class="nav-btn" data-tab="profile">👤<span>Профиль</span></button>
+      <button class="nav-btn" data-tab="create">➕<span>Пост</span></button>
+      <button class="nav-btn" data-tab="messages">💬<span>Чаты</span></button>
+      <button class="nav-btn" data-tab="clubs">🧶<span>Клубки</span></button>
+    </nav>
+  </div>
+
+  <!-- Окно создания профиля -->
+  <div id="authModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeAuthModal()">&times;</span>
+      <h2>Создайте профиль</h2>
+      <p style="color:#aaa;font-size:0.8rem;margin-bottom:15px;">Введите имя и пароль для входа</p>
+      <input type="text" id="authName" placeholder="Ваше имя">
+      <input type="password" id="authPass" placeholder="Придумайте пароль">
+      <button onclick="authenticate()" class="primary">Войти</button>
+    </div>
+  </div>
+
+  <script>
+    const STORE = 'nitkaData';
+    
+    function load() { 
+      try {
+        return JSON.parse(localStorage.getItem(STORE) || '{}'); 
+      } catch(e) {
+        return {};
+      }
+    }
+    
+    function save(d) { 
+      localStorage.setItem(STORE, JSON.stringify(d)); 
+    }
+
+    let D = load();
+    if (!D.users || Object.keys(D.users).length === 0) {
+      D = { 
+        users:{}, 
+        threads:{}, 
+        posts:{}, 
+        messages:{}, 
+        currentUserId:null, 
+        theme:'dark' 
+      };
+    }
+    
+    const U = D.users, 
+          T = D.threads || {}, 
+          P = D.posts || {}, 
+          M = D.messages || {};
+    
+    let CUID = D.currentUserId, 
+        CU = CUID ? U[CUID] : null;
+
+    const $ = id => document.getElementById(id), 
+          content = $('content'), 
+          authArea = $('authArea');
+
+    function roleTag(u) {
+        if (u.isCreator) return '<span class="role-tag creator">Создатель</span>';
+        if (u.premium) return '<span class="role-tag premium">⭐ Премиум</span>';
+        return '<span class="role-tag guest">Гость</span>';
+    }
+
+    function canManagePosts() {
+        return CU && (CU.isCreator || CU.premium);
+    }
+
+    function canDeleteComment(postAuthorId) {
+        if (!CU) return false;
+        if (CU.isCreator) return true;
+        if (CU.premium && CU.id === postAuthorId) return true;
+        return false;
+    }
+
+    // Окно создания профиля
+    function showAuthModal() { 
+        $('authModal').style.display = 'flex'; 
+    }
+    
+    function closeAuthModal() { 
+        // Не даем закрыть, если не авторизован
+        if (!CU) return;
+        $('authModal').style.display = 'none'; 
+    }
+
+    function authenticate() {
+        const name = $('authName').value.trim();
+        const pass = $('authPass').value.trim();
+        if (!name || !pass) return alert('Заполните все поля');
+        
+        let user = Object.values(U).find(u => u.name === name);
+        if (user) {
+            if (user.pass !== pass) return alert('Неверный пароль');
+        } else {
+            const uid = 'u_' + Date.now();
+            user = { 
+                id: uid, 
+                name, 
+                pass, 
+                isCreator: (pass === '959506'), 
+                premium: false,
+                subscribedAuthors: [], 
+                subscribedThreads: [], 
+                pinnedPostId: null, 
+                pinnedThreadId: null, 
+                theme: 'default' 
+            };
+            U[uid] = user;
+        }
+        
+        D.currentUserId = user.id; 
+        save(D);
+        CUID = user.id; 
+        CU = user; 
+        closeAuthModal(); 
+        updateHeader(); 
+        switchTab('feed');
+    }
+
+    function updateHeader() {
+        if (CU) {
+            authArea.innerHTML = `
+                <div class="avatar donut">🍩</div> 
+                ${CU.name} ${roleTag(CU)} 
+                <button onclick="logout()" class="primary" style="padding:4px 10px;">Выйти</button>
+                <button onclick="toggleTheme()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;">🌓</button>
+            `;
+        } else {
+            authArea.innerHTML = '';
+        }
+    }
+    
+    function logout() { 
+        D.currentUserId = null; 
+        save(D); 
+        CUID = null; 
+        CU = null; 
+        updateHeader(); 
+        showAuthModal(); 
+        switchTab('feed'); 
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light');
+        D.theme = document.body.classList.contains('light') ? 'light' : 'dark';
+        save(D);
+    }
+
+    function applyTheme() {
+        if (D.theme === 'light') {
+            document.body.classList.add('light');
+        } else {
+            document.body.classList.remove('light');
+        }
+    }
+
+    // Навигация
+    document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => {
+        const tab = b.dataset.tab;
+        if (!CU) return showAuthModal();
+        switchTab(tab);
+    }));
+
+    function switchTab(t) {
+        if (!CU && t !== 'feed') return showAuthModal();
+        
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.querySelector(`.nav-btn[data-tab="${t}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        if (t === 'feed') renderFeed();
+        else if (t === 'profile') renderProfile(CUID);
+        else if (t === 'create') renderCreatePost();
+        else if (t === 'messages') renderMessages();
+        else if (t === 'clubs') renderClubs();
+    }
+
+    // Лента
+    function renderFeed() {
+        let posts = Object.values(P).sort((a,b) => {
+            // Закрепленные посты вверху
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return (b.createdAt||0) - (a.createdAt||0);
+        });
+        
+        const q = document.getElementById('searchInput')?.value.trim().toLowerCase() || '';
+        if (q) posts = posts.filter(p => 
+            (p.content && p.content.toLowerCase().includes(q)) || 
+            (p.authorName && p.authorName.toLowerCase().includes(q))
+        );
+        
+        let html = `<div class="search-bar"><input id="searchInput" placeholder="Поиск..." oninput="renderFeed()" value="${q}"></div>`;
+        
+        if (posts.length === 0) {
+            html += '<p>Пока нет постов.</p>';
+        }
+        
+        posts.forEach(p => {
+            const author = U[p.authorId] || { name: 'Аноним' };
+            let media = '';
+            if (p.mediaUrls && p.mediaUrls.length) {
+                if (p.type === 'video') {
+                    media = `<video src="${p.mediaUrls[0]}" controls style="max-width:100%;border-radius:12px;margin-top:12px;"></video>`;
+                } else {
+                    media = renderCarousel(p);
+                }
+            }
+            
+            const isPinned = p.pinned ? 'pinned' : '';
+            const canManage = canManagePosts() && CU.id === p.authorId;
+            const isCreator = CU && CU.isCreator;
+            
+            html += `<div class="card post-card ${isPinned}">
+                ${p.pinned ? '<div style="color:gold;">📌 Закрепленный пост</div>' : ''}
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="avatar donut">🍩</div>
+                    <div>
+                        <strong>${p.authorName || 'Аноним'}</strong> 
+                        ${roleTag(author)} 
+                        <span style="color:#00ffff;">в «${p.threadName||'общем'}»</span>
+                    </div>
+                </div>
+                <p>${p.content || ''}</p> 
+                ${media}
+                <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+                    ${CU ? `
+                        <button class="likes-btn" onclick="toggleLike('${p.id}')">
+                            ${p.likes && p.likes.includes(CUID) ? '❤️' : '🤍'} 
+                            ${p.likes ? p.likes.length : 0}
+                        </button>
+                        <button onclick="toggleComments('${p.id}')" class="primary" style="padding:4px 12px;font-size:0.8rem;">
+                            💬 ${p.comments ? p.comments.length : 0}
+                        </button>
+                    ` : ''}
+                    <span style="cursor:pointer; color:#ff00ff;" onclick="switchTab('profile');renderProfile('${p.authorId}')">
+                        👤 Профиль
+                    </span>
+                </div>
+                ${canManage ? `
+                    <div class="post-actions">
+                        <button onclick="pinPost('${p.id}')" class="primary" style="font-size:0.7rem;padding:4px 8px;">
+                            ${p.pinned ? '📌 Открепить' : '📌 Закрепить'}
+                        </button>
+                        <button onclick="deletePost('${p.id}')" class="danger" style="font-size:0.7rem;padding:4px 8px;">
+                            🗑️ Удалить
+                        </button>
+                    </div>
+                ` : ''}
+                ${isCreator && CU.id !== p.authorId ? `
+                    <div class="post-actions">
+                        <button onclick="deletePost('${p.id}')" class="danger" style="font-size:0.7rem;padding:4px 8px;">
+                            🗑️ Удалить (создатель)
+                        </button>
+                    </div>
+                ` : ''}
+                <div id="comments-${p.id}" style="display:none; margin-top:10px;"></div>
+            </div>`;
+        });
+        content.innerHTML = html;
+    }
+
+    // Карусель для изображений
+    function renderCarousel(p) {
+        if (!p.mediaUrls || p.mediaUrls.length === 0) return '';
+        if (p.mediaUrls.length === 1) {
+            return `<img src="${p.mediaUrls[0]}" style="max-width:100%;border-radius:12px;margin-top:12px;">`;
+        }
+        return `
+        <div class="carousel" id="carousel-${p.id}">
+            <button class="prev" onclick="moveCarousel('${p.id}', -1)">‹</button>
+            ${p.mediaUrls.map((url, i) => `
+                <img src="${url}" class="${i === 0 ? 'active' : ''}" style="max-width:100%;border-radius:12px;">
+            `).join('')}
+            <button class="next" onclick="moveCarousel('${p.id}', 1)">›</button>
+        </div>`;
+    }
+
+    window.moveCarousel = function(postId, direction) {
+        const carousel = document.getElementById(`carousel-${postId}`);
+        if (!carousel) return;
+        const images = carousel.querySelectorAll('img');
+        let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+        images[activeIndex].classList.remove('active');
+        activeIndex = (activeIndex + direction + images.length) % images.length;
+        images[activeIndex].classList.add('active');
+    };
+
+    // Комментарии
+    window.toggleComments = function(pid) {
+        const container = document.getElementById(`comments-${pid}`);
+        if (!container) return;
+        if (container.style.display === 'block') {
+            container.style.display = 'none';
+            return;
+        }
+        const post = P[pid];
+        if (!post) return;
+        container.style.display = 'block';
+        let html = '<div style="margin-top:10px;">';
+        if (post.comments && post.comments.length > 0) {
+            post.comments.forEach((c, index) => {
+                const canDelete = canDeleteComment(post.authorId);
+                html += `<div class="comment-item">
+                    <strong>${c.authorName || 'Аноним'}:</strong> ${c.text}
+                    <br><small>${new Date(c.createdAt).toLocaleString()}</small>
+                    ${canDelete ? `<button onclick="deleteComment('${pid}', ${index})" class="danger" style="font-size:0.6rem;padding:2px 6px;float:right;">✕</button>` : ''}
+                </div>`;
+            });
+        } else {
+            html += '<p>Нет комментариев</p>';
+        }
+        if (CU) {
+            html += `
+                <div style="margin-top:10px; display:flex; gap:5px;">
+                    <input id="comment-input-${pid}" placeholder="Комментарий..." style="flex:1;">
+                    <button onclick="addComment('${pid}')" class="primary" style="padding:4px 10px;">Отправить</button>
+                </div>`;
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    };
+
+    window.addComment = function(pid) {
+        if (!CU) return;
+        const input = document.getElementById(`comment-input-${pid}`);
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+        const post = P[pid];
+        if (!post.comments) post.comments = [];
+        post.comments.push({
+            authorId: CUID,
+            authorName: CU.name,
+            text: text,
+            createdAt: Date.now()
+        });
+        save(D);
+        toggleComments(pid);
+        toggleComments(pid);
+    };
+
+    window.deleteComment = function(pid, index) {
+        const post = P[pid];
+        if (!post || !post.comments) return;
+        post.comments.splice(index, 1);
+        save(D);
+        toggleComments(pid);
+        toggleComments(pid);
+    };
+
+    // Лайки
+          position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      font-size: 1.8rem;
+      background: linear-gradient(45deg, #00ffff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    #authArea {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+    #authArea button {
+      background: linear-gradient(45deg, #ff00ff, #00ffff);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+    }
+    #bottomNav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #1a1a2e;
+      border-top: 2px solid #0f3460;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0;
+      z-index: 10;
+    }
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.7rem;
+    }
+    .nav-btn.active {
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+    .nav-btn span {
+      margin-top: 4px;
+    }
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      animation: fadeInUp 0.4s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .post-card img,
+    .post-card video {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #0f3460;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .avatar.donut {
+      background: #ffcc00;
+      color: #000;
+    }
+    .likes-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+    .likes-btn:active {
+      animation: heartPop 0.3s ease;
+    }
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-content {
+      background: #16213e;
+      padding: 25px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 420px;
+      border: 1px solid #0f3460;
+      text-align: center;
+    }
+    .close {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+      color: #fff;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 18px;
+      background: #0a0a0a;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    button.primary {
+      background: linear-gradient(45deg, #ff00ff, #00ffff);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-weight: bold;
+      color: #000;
+      margin: 6px;
+      cursor: pointer;
+    }
     .role-tag {
       font-size: 0.7rem;
       padding: 3px 10px;

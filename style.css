@@ -26,15 +26,18 @@ main{padding:20px;max-width:800px;margin:0 auto}
 input,textarea,select{width:100%;padding:12px;margin:10px 0 18px;background:#0a0a0a;border:1px solid #0f3460;border-radius:12px;color:#fff;font-size:.95rem}
 button.primary{background:linear-gradient(45deg,#ff00ff,#00ffff);border:none;padding:12px 22px;border-radius:30px;font-weight:bold;color:#000;margin:6px;cursor:pointer}
 .role-tag{font-size:0.7rem;padding:3px 10px;border-radius:12px;margin-left:6px;font-weight:bold}
-.creator{background:gold;color:#000}.guest{background:#555}.premium{background:#ff00ff;color:white}.admin{background:#00ffff;color:#000}
+.creator{background:gold;color:#000}.guest{background:#555}.premium{background:#ff00ff;color:white}
 .stats{display:flex;gap:25px;margin:15px 0;font-size:0.95rem}
 .stats span{font-weight:bold;color:#00ffff}
+.pin-badge{background:gold;color:black;padding:3px 8px;border-radius:10px;font-size:0.7rem;margin-left:6px}
 .carousel{position:relative;display:flex;align-items:center;justify-content:center}
 .carousel img{max-width:100%;border-radius:12px;display:none}
 .carousel img.active{display:block}
 .carousel button{position:absolute;background:rgba(0,0,0,0.5);color:white;border:none;font-size:1.8rem;padding:4px 10px;cursor:pointer;border-radius:50%;top:50%;transform:translateY(-50%)}
 .carousel .prev{left:5px}.carousel .next{right:5px}
 .search-bar input{margin-bottom:10px}
+.badge{position:absolute;top:-5px;right:-10px;background:red;color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem}
+.dropdown{display:none;position:absolute;top:40px;right:0;background:#16213e;border:1px solid #0f3460;border-radius:12px;width:280px;max-height:300px;overflow-y:auto;padding:10px;z-index:20}.search-bar input{margin-bottom:10px}
 .badge{position:absolute;top:-5px;right:-10px;background:red;color:white;border-radius:50%;padding:2px 6px;font-size:0.7rem}
 .dropdown{display:none;position:absolute;top:40px;right:0;background:#16213e;border:1px solid #0f3460;border-radius:12px;width:280px;max-height:300px;overflow-y:auto;padding:10px;z-index:20}.carousel button{position:absolute;background:rgba(0,0,0,0.5);color:white;border:none;font-size:1.8rem;padding:4px 10px;cursor:pointer;border-radius:50%;top:50%;transform:translateY(-50%)}
 .carousel .prev{left:5px}.carousel .next{right:5px}

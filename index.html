@@ -10,6 +10,18 @@
   <div id="app">
     <header>
       <h1>⚡ Нитка</h1>
+      <div <!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нитка — соцсеть</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+  <div id="app">
+    <header>
+      <h1>⚡ Нитка</h1>
       <div id="authArea"></div>
       <span id="themeToggle" onclick="toggleTheme()" style="cursor:pointer; font-size:1.4rem;">🌓</span>
       <div id="notifArea">
@@ -20,7 +32,37 @@
     <main id="content"></main>
     <nav id="bottomNav">
       <button class="nav-btn" data-tab="feed">🔥<span>Лента</span></button>
-      <button class="nav-btn" data-tab="profile">👤<span>Мой профиль</span></button>
+      <button class="nav-btn" data-tab="profile">👤<span>Профиль</span></button>
+      <button class="nav-btn" data-tab="create">➕<span>Пост</span></button>
+      <button class="nav-btn" data-tab="messages">💬<span>Чаты</span></button>
+      <button class="nav-btn" data-tab="clubs">🧶<span>Клубки</span></button>
+    </nav>
+  </div>
+
+  <!-- Единое окно входа / создания профиля -->
+  <div id="authModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeAuthModal()">&times;</span>
+      <h2>Войдите или создайте профиль</h2>
+      <input type="text" id="authName" placeholder="Ваше имя">
+      <input type="password" id="authPass" placeholder="Пароль">
+      <button onclick="authenticate()" class="primary">Войти / Создать</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+  </html>
+      <span id="themeToggle" onclick="toggleTheme()" style="cursor:pointer; font-size:1.4rem;">🌓</span>
+      <div id="notifArea">
+        <span id="notifBell" onclick="toggleNotifPanel()">🔔<span id="notifCount" class="badge" style="display:none;">0</span></span>
+        <div id="notifPanel" class="dropdown"></div>
+      </div>
+    </header>
+    <main id="content"></main>
+    <nav id="bottomNav">
+      <button class="nav-btn" data-tab="feed">🔥<span>Лента</span></button>
+      <button class="nav-btn" data-tab="profile">👤<span>Профиль</span></button>
       <button class="nav-btn" data-tab="create">➕<span>Пост</span></button>
       <button class="nav-btn" data-tab="messages">💬<span>Чаты</span></button>
       <button class="nav-btn" data-tab="clubs">🧶<span>Клубки</span></button>
@@ -35,6 +77,23 @@
       <input type="password" id="loginPass" placeholder="Пароль">
       <button onclick="login()" class="primary">Войти</button>
       <hr>
+      <p>Нет аккаунта? <a onclick="showRegister()" style="color:#00ffff; cursor:pointer;">Создать</a></p>
+    </div>
+  </div>
+
+  <div id="registerModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeRegisterModal()">&times;</span>
+      <h2>Регистрация</h2>
+      <input type="text" id="regName" placeholder="Имя">
+      <input type="password" id="regPass" placeholder="Пароль">
+      <button onclick="register()" class="primary">Создать профиль</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>      <hr>
       <p>Нет аккаунта? <a onclick="showRegister()" style="color:#00ffff; cursor:pointer;">Создать</a></p>
     </div>
   </div>

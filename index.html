@@ -2,19 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Нитка — соцсеть</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body class="dark">
-  <div id="app">
-    <header>
-      <h1>⚡ Нитка</h1>
-      <div <!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Нитка — соцсеть</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -35,6 +23,24 @@
       <button class="nav-btn" data-tab="profile">👤<span>Профиль</span></button>
       <button class="nav-btn" data-tab="create">➕<span>Пост</span></button>
       <button class="nav-btn" data-tab="messages">💬<span>Чаты</span></button>
+      <button class="nav-btn" data-tab="clubs">🧶<span>Клубки</span></button>
+    </nav>
+  </div>
+
+  <!-- Единое окно входа / создания профиля -->
+  <div id="authModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeAuthModal()">&times;</span>
+      <h2>Войдите или создайте профиль</h2>
+      <input type="text" id="authName" placeholder="Ваше имя">
+      <input type="password" id="authPass" placeholder="Пароль">
+      <button onclick="authenticate()" class="primary">Войти / Создать</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>      <button class="nav-btn" data-tab="messages">💬<span>Чаты</span></button>
       <button class="nav-btn" data-tab="clubs">🧶<span>Клубки</span></button>
     </nav>
   </div>

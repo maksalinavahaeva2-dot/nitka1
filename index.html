@@ -1,40 +1,264 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Нитка — соцсеть</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --bg: #0a0a0a;
-      --card-bg: rgba(22, 33, 62, 0.9);
-      --text: #e0e0e0;
-      --border: #0f3460;
-    }
-    .light {
-      --bg: #f5f5f5;
-      --card-bg: #ffffff;
-      --text: #222;
-      --border: #ddd;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-bottom: 80px;
-      transition: background 0.3s, color 0.3s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    header {
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      padding: 12px 20px;
-      border-bottom: 2px solid #0f3460;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Нитка</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:#0a0a0a;color:#e0e0e0;padding-bottom:65px}
+header{background:#1a1a2e;padding:10px 15px;border-bottom:2px solid #0f3460;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+header h1{font-size:1.3rem;background:linear-gradient(45deg,#0ff,#f0f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#aa{display:flex;align-items:center;gap:5px;font-size:.75rem;flex-wrap:wrap}
+nav{position:fixed;bottom:0;left:0;width:100%;background:#1a1a2e;border-top:2px solid #0f3460;display:flex;justify-content:space-around;padding:5px 0;z-index:10}
+nav button{background:none;border:none;color:#aaa;padding:5px;cursor:pointer;font-size:.65rem}
+nav button.active{color:#0ff}
+main{padding:15px;max-width:700px;margin:0 auto}
+.card{background:rgba(22,33,62,0.9);border:1px solid #0f3460;border-radius:15px;padding:15px;margin-bottom:15px}
+.av{width:40px;height:40px;border-radius:50%;background:#0f3460;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0;cursor:pointer}
+.av img{width:100%;height:100%;object-fit:cover}
+.btn{background:linear-gradient(45deg,#f0f,#0ff);border:none;padding:7px 14px;border-radius:15px;font-weight:700;color:#000;cursor:pointer;font-size:.8rem}
+.bs{padding:4px 8px;font-size:.7rem}.br{background:#f44;color:#fff}.bg{background:#555;color:#fff}
+.role{font-size:.6rem;padding:2px 7px;border-radius:10px;margin-left:4px;font-weight:700}
+.cr{background:gold;color:#000}.gu{background:#555;color:#fff}.pr{background:#f0f;color:#fff}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal>div{background:#16213e;padding:25px;border-radius:15px;width:90%;max-width:400px}
+input,textarea,select{width:100%;padding:10px;margin:6px 0;background:#0a0a0a;border:1px solid #0f3460;border-radius:10px;color:#fff;font-size:.9rem}
+textarea{min-height:70px;resize:vertical}
+img,video{max-width:100%;border-radius:10px;margin-top:8px}
+.pw{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.pw>div{width:70px;height:70px;border-radius:8px;overflow:hidden;position:relative}
+.pw img{width:100%;height:100%;object-fit:cover;margin:0}
+.pw .dx{position:absolute;top:2px;right:2px;background:red;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer}
+.badge{background:red;color:#fff;border-radius:50%;padding:2px 6px;font-size:.7rem;margin-left:5px}
+.fb{padding:5px 10px;border-radius:12px;border:2px solid #555;background:none;color:#fff;cursor:pointer;font-size:.7rem;margin:2px}
+.fb.ac{border-color:#f0f;background:rgba(255,0,255,.2)}
+.up{display:inline-block;padding:8px 12px;background:#0f3460;border-radius:8px;cursor:pointer;margin:4px;font-size:.8rem}
+.cb{background:rgba(255,255,255,.03);padding:8px;border-radius:8px;margin:4px 0}
+</style>
+</head>
+<body>
+<header><h1>⚡ Нитка</h1><div id="aa"></div></header>
+<main id="ct"></main>
+<nav>
+<button class="nav-btn active" data-tab="feed">🏠</button>
+<button class="nav-btn" data-tab="profile">👤</button>
+<button class="nav-btn" data-tab="create">➕</button>
+<button class="nav-btn" data-tab="messages">✉️</button>
+<button class="nav-btn" data-tab="clubs">👥</button>
+</nav>
+<div id="am" class="modal" style="display:none"><div>
+<h2 id="at">Создать профиль</h2>
+<div id="af"><input id="an" placeholder="Имя"><input id="ap" type="password" placeholder="Пароль"></div>
+<button onclick="auth()" class="btn" style="width:100%">Войти</button>
+<p style="margin-top:10px;font-size:.7rem;color:#aaa"><span onclick="tam()" style="color:#0ff;cursor:pointer" id="tl">Есть аккаунт? Войти</span></p>
+</div></div>
+<input type="file" id="mi" accept="image/*,video/*" multiple style="display:none" onchange="adm(event)">
+<input type="file" id="ci" accept="image/*" capture="camera" style="display:none" onchange="adm(event)">
+<input type="file" id="ai" accept="image/*" style="display:none" onchange="sav(event)">
+<input type="file" id="tai" accept="image/*" style="display:none" onchange="savt(event)">
+<script>
+const K='ntk';
+function L(){try{return JSON.parse(localStorage.getItem(K)||'{}')}catch(e){return{}}}
+function S(d){localStorage.setItem(K,JSON.stringify(d))}
+let D=L();
+if(!D.u)D={u:{},t:{},p:{},m:{},cid:null,n:[]};
+let U=D.u,T=D.t||{},P=D.p||{},M=D.m||{},cid=D.cid,cu=cid?U[cid]:null,N=D.n||[];
+const ct=document.getElementById('ct'),aa=document.getElementById('aa');
+let tm=[],tf='',am='create',etid=null;
+
+function $(id){return document.getElementById(id)}
+function R(u){if(!u)return'';if(u.cr)return'<span class="role cr">Создатель</span>';if(u.pr)return'<span class="role pr">Премиум</span>';return'<span class="role gu">Гость</span>'}
+function AV(u){return u?.av?`<img src="${u.av}">`:'🍩'}
+function SA(m){am=m||'create';$('am').style.display='flex';$('at').textContent=am=='create'?'Создать профиль':'Войти';$('tl').textContent=am=='create'?'Есть аккаунт? Войти':'Создать новый?'}
+function tam(){SA(am=='create'?'login':'create')}
+function CA(){$('am').style.display='none'}
+
+function auth(){
+let n=$('an').value.trim(),p=$('ap').value.trim();
+if(!n||!p)return alert('Заполните поля');
+if(am=='create'){
+if(Object.values(U).find(u=>u.n===n))return alert('Имя занято');
+let u={id:'u_'+Date.now(),n,p,cr:p==='959506',pr:false,av:null,sb:[],sg:[],fr:[],fq:[]};
+U[u.id]=u;D.cid=u.id;S(D);cid=u.id;cu=u;
+}else{
+let u=Object.values(U).find(u=>u.n===n);
+if(!u)return alert('Не найден');
+if(u.p!==p)return alert('Неверный пароль');
+D.cid=u.id;S(D);cid=u.id;cu=u;
+}
+CA();UH();go('feed')
+}
+
+function UH(){
+let nc=N.filter(x=>x.to==cid&&!x.read).length;
+if(cu)aa.innerHTML=`<div class="av">${AV(cu)}</div> ${cu.n} ${R(cu)} <button onclick="EP()" class="btn bs bg">✏️</button> <button onclick="LO()" class="btn bs">🚪</button> <span onclick="go('notif')" style="cursor:pointer">🔔${nc?`<span class="badge">${nc}</span>`:''}</span>`;
+else aa.innerHTML=''
+}
+
+function LO(){D.cid=null;S(D);cid=null;cu=null;UH();SA('login');go('feed')}
+function addN(to,type,msg){N.push({id:'n_'+Date.now(),to,from:cid,type,msg,read:false,ct:Date.now()});S(D);UH()}
+
+document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>{if(!cu)return SA('login');go(b.dataset.tab)});
+
+function go(t){
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+let btn=document.querySelector(`.nav-btn[data-tab="${t}"]`);
+if(btn)btn.classList.add('active');
+if(t=='feed')RF();
+else if(t=='profile')RP(cid);
+else if(t=='create')RC();
+else if(t=='messages')RM();
+else if(t=='clubs')RCL();
+else if(t=='notif')RN();
+}
+
+function RF(){
+let ps=Object.values(P).sort((a,b)=>b.ct-a.ct);
+let h='';
+if(!ps.length)h='<p>Нет постов</p>';
+ps.forEach(p=>{
+let au=U[p.au]||{n:'Аноним'},md='';
+if(p.mu?.length){
+if(p.mt=='video')md=`<video src="${p.mu[0]}" controls></video>`;
+else md=`<img src="${p.mu[0]}">`;
+}
+h+=`<div class="card"><div style="display:flex;align-items:center;gap:8px"><div class="av" onclick="go('profile');RP('${p.au}')">${AV(au)}</div><div><b style="cursor:pointer" onclick="go('profile');RP('${p.au}')">${p.an}</b> ${R(au)}</div></div>${p.tx?`<p>${p.tx}</p>`:''}${md}<div style="margin-top:8px"><span onclick="TL('${p.id}')" style="cursor:pointer;font-size:1.2rem">${p.lk?.includes(cid)?'❤️':'🤍'} ${p.lk?.length||0}</span> <button onclick="TC('${p.id}')" class="btn bs">💬 ${p.cm?.length||0}</button>${cu&&cu.id==p.au?` <button onclick="DP('${p.id}')" class="btn bs br">🗑</button>`:''}${cu&&cu.cr&&cu.id!=p.au?` <button onclick="DP('${p.id}')" class="btn bs br">🗑</button>`:''}</div><div id="cm-${p.id}" style="display:none;margin-top:8px"></div></div>`
+});
+ct.innerHTML=h
+}
+
+window.TC=function(pid){
+let c=$('cm-'+pid);if(!c)return;
+if(c.style.display=='block'){c.style.display='none';return}
+let p=P[pid];if(!p)return;
+c.style.display='block';
+let h='';
+if(p.cm?.length)p.cm.forEach(x=>{h+=`<div class="cb"><b>${x.an}</b>: ${x.tx}</div>`});
+else h+='<p>Нет комментариев</p>';
+h+=`<div style="display:flex;gap:4px;margin-top:8px"><input id="ci-${pid}" placeholder="Комментарий"><button onclick="AC('${pid}')" class="btn bs">➤</button></div>`;
+c.innerHTML=h
+}
+
+window.AC=function(pid){
+let i=$('ci-'+pid);if(!i)return;
+let t=i.value.trim();if(!t)return;
+if(!P[pid].cm)P[pid].cm=[];
+P[pid].cm.push({au:cid,an:cu.n,tx:t,ct:Date.now()});
+S(D);addN(P[pid].au,'comment','Прокомментировал ваш пост');
+TC(pid);TC(pid)
+}
+
+window.TL=function(pid){
+if(!cu)return SA('login');
+let p=P[pid];if(!p.lk)p.lk=[];
+let i=p.lk.indexOf(cid);
+i>-1?p.lk.splice(i,1):(p.lk.push(cid),addN(p.au,'like','Лайкнул ваш пост'));
+S(D);RF()
+}
+
+window.DP=function(pid){
+if(!cu||(cu.id!=P[pid]?.au&&!cu.cr))return;
+if(confirm('Удалить пост?')){delete P[pid];S(D);RF()}
+}
+
+function RC(){
+ct.innerHTML=`<div class="card"><h3>Новый пост</h3><textarea id="ptx" placeholder="Что нового?"></textarea><div id="prv" class="pw"></div><span class="up" onclick="$('mi').click()">🖼</span><span class="up" onclick="$('ci').click()">📸</span><div style="margin:8px 0"><button class="fb${tf==''?' ac':''}" onclick="SF('')">Ориг</button><button class="fb${tf=='vin'?' ac':''}" onclick="SF('vin')">Винтаж</button><button class="fb${tf=='gr'?' ac':''}" onclick="SF('gr')">Ч/Б</button></div><button onclick="PB()" class="btn" style="width:100%">Опубликовать</button></div>`
+}
+
+window.SF=function(f){tf=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('ac'));let b=document.querySelector(`.fb[onclick="SF('${f}')"]`);if(b)b.classList.add('ac');UP()}
+window.adm=function(e){[...e.target.files].forEach(f=>{let r=new FileReader();r.onload=function(ev){tm.push({u:ev.target.result,t:f.type.startsWith('video')?'video':'img'});UP()};r.readAsDataURL(f)});e.target.value=''}
+function UP(){let c=$('prv');if(c)c.innerHTML=tm.map((m,i)=>`<div><img src="${m.u}" class="${tf}"><button class="dx" onclick="RMV(${i})">✕</button></div>`).join('')}
+window.RMV=function(i){tm.splice(i,1);UP()}
+
+window.PB=function(){
+let tx=$('ptx')?.value.trim()||'';
+if(!tx&&!tm.length)return alert('Добавьте текст или фото');
+let pid='p_'+Date.now();
+P[pid]={id:pid,au:cid,an:cu.n,tx:tx,mu:tm.map(m=>m.u),mt:tm.some(m=>m.t=='video')?'video':'img',fl:tf,lk:[],cm:[],ct:Date.now()};
+S(D);tm=[];tf='';go('feed')
+}
+
+function RP(uid){
+let u=U[uid];if(!u)return;
+let ps=Object.values(P).filter(p=>p.au==uid).sort((a,b)=>b.ct-a.ct);
+let sb=cu&&cu.sg?.includes(uid),fr=cu&&cu.fr?.includes(uid),fq=cu&&cu.fq?.includes(uid);
+ct.innerHTML=`<div class="card" style="text-align:center"><div class="av" style="width:70px;height:70px;font-size:35px;margin:0 auto;cursor:${uid==cid?'pointer':'default'}" onclick="${uid==cid?"$('ai').click()":''}">${AV(u)}</div><h3>${u.n} ${R(u)}</h3><div style="display:flex;gap:10px;justify-content:center;margin:10px 0"><div><b>${ps.length}</b><br><small>Постов</small></div><div><b>${u.sb?.length||0}</b><br><small>Подп.</small></div><div><b>${u.sg?.length||0}</b><br><small>Подписок</small></div><div><b>${u.fr?.length||0}</b><br><small>Друзей</small></div></div>${uid!=cid?`<button onclick="TS('${uid}')" class="btn">${sb?'✅ Подписаны':'🔔 Подписаться'}</button> <button onclick="SD('${uid}')" class="btn bs">✉️ Написать</button> <button onclick="TF('${uid}')" class="btn bs">${fr?'👥 Друзья':fq?'⏳ Запрос...':'👤 В друзья'}</button>`:''}</div><h4>Посты:</h4>${ps.length?ps.map(p=>{let m='';if(p.mu?.length)m=p.mt=='video'?`<video src="${p.mu[0]}" controls></video>`:`<img src="${p.mu[0]}">`;return`<div class="card">${p.tx?`<p>${p.tx}</p>`:''}${m}<div>❤️${p.lk?.length||0} 💬${p.cm?.length||0}</div></div>`}).join(''):'<p>Нет постов</p>'}`
+}
+
+window.TS=function(uid){if(!cu)return SA('login');if(!cu.sg)cu.sg=[];if(!U[uid].sb)U[uid].sb=[];let i=cu.sg.indexOf(uid);i>-1?cu.sg.splice(i,1):(cu.sg.push(uid),U[uid].sb.push(cid));S(D);RP(uid)}
+window.TF=function(uid){if(!cu)return;if(!cu.fq)cu.fq=[];if(!U[uid].fq)U[uid].fq=[];if(cu.fr?.includes(uid)){cu.fr=cu.fr.filter(x=>x!=uid);U[uid].fr=U[uid].fr.filter(x=>x!=cid)}else if(cu.fq.includes(uid)){cu.fq=cu.fq.filter(x=>x!=uid);U[uid].fq=U[uid].fq.filter(x=>x!=cid)}else{U[uid].fq.push(cid);addN(uid,'friend','Хочет добавить вас в друзья')}S(D);RP(uid)}
+window.sav=function(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=function(ev){cu.av=ev.target.result;S(D);UH();RP(cid)};r.readAsDataURL(f)}
+
+function RM(){
+let ms=Object.values(M).filter(m=>m.f==cid||m.t==cid).sort((a,b)=>b.ct-a.ct),dl={};
+ms.forEach(m=>{let p=m.f==cid?m.t:m.f;if(!dl[p])dl[p]={u:U[p]||{n:'Неизвестный'},ms:[]};dl[p].ms.push(m)});
+let h='<h3>✉️ Сообщения</h3>';
+if(!Object.keys(dl).length)h+='<p>Нет сообщений</p>';
+Object.entries(dl).forEach(([id,d])=>{let lm=d.ms[0];h+=`<div class="card" onclick="OD('${id}')" style="cursor:pointer"><div style="display:flex;align-items:center;gap:8px"><div class="av">${AV(d.u)}</div><div><b>${d.u.n}</b><br><small>${lm.tx.substring(0,30)}</small></div></div></div>`});
+ct.innerHTML=h
+}
+
+window.SD=function(oid){OD(oid);go('messages')}
+window.OD=function(oid){
+let p=U[oid]||{n:'Неизвестный'},ms=Object.values(M).filter(m=>(m.f==cid&&m.t==oid)||(m.f==oid&&m.t==cid)).sort((a,b)=>a.ct-b.ct);
+ct.innerHTML=`<div class="card"><button onclick="RM()" class="btn bs">← Назад</button><h3>✉️ ${p.n}</h3><div style="max-height:350px;overflow-y:auto;margin:10px 0">${ms.map(m=>`<div style="text-align:${m.f==cid?'right':'left'};margin:5px"><div style="display:inline-block;background:${m.f==cid?'#0f3460':'#1a1a2e'};padding:8px 12px;border-radius:12px;max-width:75%">${m.tx}</div></div>`).join('')}</div><div style="display:flex;gap:4px"><input id="msi" placeholder="Сообщение"><button onclick="SM('${oid}')" class="btn">➤</button></div></div>`
+}
+window.SM=function(oid){let i=$('msi');if(!i)return;let t=i.value.trim();if(!t)return;M['m_'+Date.now()]={f:cid,t:oid,tx:t,ct:Date.now()};S(D);OD(oid)}
+
+function RCL(){
+let th=Object.values(T);
+ct.innerHTML=`<div class="card"><h3>👥 Создать клубок</h3><input id="ntn" placeholder="Название"><button onclick="CTH()" class="btn" style="width:100%">Создать</button></div><h4>Клубки:</h4>${th.length?th.map(t=>`<div class="card"><div style="display:flex;align-items:center;gap:8px"><div class="av" onclick="ODT('${t.id}')">${t.av?`<img src="${t.av}">`:'👥'}</div><div><b>${t.n}</b> (👥${t.mb?.length||0})</div></div><br><button onclick="JT('${t.id}')" class="btn bs">${t.mb?.includes(cid)?'Выйти':'Вступить'}</button> <button onclick="ODT('${t.id}')" class="btn bs">💬</button> ${t.au==cid||t.adm?.includes(cid)?`<button onclick="ET('${t.id}')" class="btn bs bg">✏️</button> <button onclick="DT('${t.id}')" class="btn bs br">🗑</button>`:''}</div>`).join(''):'<p>Нет клубков</p>'}`
+}
+
+window.CTH=function(){let n=$('ntn')?.value.trim();if(!n)return;T['t_'+Date.now()]={id:'t_'+Date.now(),n,au:cid,adm:[],mb:[cid],chat:[],ct:Date.now(),av:null};S(D);RCL()}
+window.JT=function(tid){let t=T[tid];if(!t)return;if(!t.mb)t.mb=[];let i=t.mb.indexOf(cid);i>-1?t.mb.splice(i,1):t.mb.push(cid);S(D);RCL()}
+
+window.ET=function(tid){
+etid=tid;let t=T[tid];if(!t)return;
+ct.innerHTML=`<div class="card"><h3>✏️ Изменить клубок</h3><p>Название: <b>${t.n}</b></p><input id="etn" placeholder="Новое название"><span class="up" onclick="$('tai').click()">🖼 Аватарка</span><button onclick="ST()" class="btn" style="width:100%">Сохранить</button><button onclick="RCL()" class="btn bg" style="width:100%">Отмена</button><h4>Участники:</h4>${t.mb?.map(uid=>`<div class="cb"><b>${U[uid]?.n||'?'}</b> ${t.adm?.includes(uid)?'⭐Админ':''} ${t.au==uid?'👑Создатель':''} ${t.au!=uid?`<button onclick="TAD('${tid}','${uid}')" class="btn bs">${t.adm?.includes(uid)?'Убрать админа':'Сделать админом'}</button>`:''}</div>`).join('')||'Нет'}</div>`
+}
+
+window.TAD=function(tid,uid){
+let t=T[tid];if(!t||t.au!=cid)return;
+if(!t.adm)t.adm=[];
+let i=t.adm.indexOf(uid);
+i>-1?t.adm.splice(i,1):t.adm.push(uid);
+S(D);ET(tid)
+}
+
+window.ST=function(){
+let t=T[etid];if(!t)return;
+let nn=$('etn')?.value.trim();if(nn)t.n=nn;S(D);RCL()
+}
+
+window.savt=function(e){
+let f=e.target.files[0];if(!f||!etid)return;
+let r=new FileReader();
+r.onload=function(ev){T[etid].av=ev.target.result;S(D);ET(etid)};
+r.readAsDataURL(f)
+}
+
+window.DT=function(tid){let t=T[tid];if(!t||(t.au!=cid&&!t.adm?.includes(cid)))return;if(confirm('Удалить клубок?')){delete T[tid];S(D);RCL()}}
+window.ODT=function(tid){
+let t=T[tid];if(!t||!t.mb?.includes(cid))return alert('Вступите в клубок');
+if(!t.chat)t.chat=[];
+ct.innerHTML=`<div class="card"><button onclick="RCL()" class="btn bs">← Назад</button><h3>💬 ${t.n}${t.av?` <img src="${t.av}" style="width:30px;height:30px;border-radius:50%">`:''}</h3><div style="max-height:350px;overflow-y:auto;margin:10px 0">${t.chat.map(m=>{let au=U[m.au]||{n:'?'};return`<div><b>${au.n}${t.adm?.includes(m.au)?'⭐':''}${t.au==m.au?'👑':''}:</b> ${m.tx}</div>`}).join('')}</div><div style="display:flex;gap:4px"><input id="tci" placeholder="Сообщение"><button onclick="STM('${tid}')" class="btn">➤</button></div></div>`
+}
+window.STM=function(tid){let i=$('tci');if(!i)return;let tx=i.value.trim();if(!tx)return;T[tid].chat.push({au:cid,tx,ct:Date.now()});S(D);ODT(tid)}
+
+function RN(){
+ct.innerHTML='<h3>🔔 Уведомления</h3>';
+let un=N.filter(x=>x.to==cid).sort((a,b)=>b.ct-a.ct);
+un.forEach(n=>{n.read=true;ct.innerHTML+=`<div class="card"><b>${U[n.from]?.n||'Система'}:</b> ${n.msg}</div>`});
+S(D);UH()
+}
+
+if(!cu){SA('login')}else{go('feed')}
+UH();
+</script>
+</body>
+</html>      position: sticky;
       top: 0;
       z-index: 10;
     }
